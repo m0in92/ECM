@@ -4,7 +4,7 @@
 <p>
 This repository contains the code for simulating the terminal voltage of the lithium-ion battery (LIB) using Thevenin equivalent-circuit model.
 </p>
-![image](imgs/example_fig.png)
+<img title="" src="https://github.com/m0in92/ECM/imgs/example_fig.png" alt="" data-align="inline">
 
 
 
