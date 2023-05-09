@@ -16,14 +16,12 @@ from src.solver.discrete_time_solver import DT_solver
 
 
 def eta_func(i):
-    if i <= 0:
-        return 1
-    else:
-        return 0.9995
+    return 1 if i<=0 else 0.9995
 
 
 t_lim_index = 26030
 
+# Read experimental data
 df = pd.read_csv('../data/CALCE_A123/A1-A123-Dynamics.csv')
 t = df['Test_Time(s)'].to_numpy()
 I = df['Current(A)'].to_numpy()
@@ -38,24 +36,21 @@ solver = DT_solver(ECM_obj=ecm, isothermal=True, t_app=t[:t_lim_index], i_app=-I
 z_pred, v_pred = solver.solve(verbose=True)
 
 # Plots
-fig = plt.figure()
+fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1)
 
-ax1 = fig.add_subplot(3,1,1)
 ax1.plot(t, V, label="exp.")
 ax1.plot(t[:t_lim_index], v_pred, label="pred.")
 ax1.set_xlabel('Time [s]')
 ax1.set_ylabel('V [V]')
+ax1.legend()
 
-ax2 = fig.add_subplot(3,1,2)
 ax2.plot(t[:t_lim_index], z_pred, label="SOC pred.")
 ax2.set_xlabel('Time [s]')
 ax2.set_ylabel('SOC')
 
-ax3 = fig.add_subplot(3,1,3)
 ax3.plot(t, I, label="I_exp")
 ax3.set_xlabel('Time [s]')
 ax3.set_ylabel('I [A]')
 
-plt.legend()
 plt.tight_layout()
 plt.show()
