@@ -37,9 +37,25 @@ ecm = Thevenin1RC(R0=0.225, R1=0.001, C1=0.03, OCV_func=OCV_func, eta_func=eta_f
 solver = DT_solver(ECM_obj=ecm, isothermal=True, t_app=t[:t_lim_index], i_app=-I[:t_lim_index])
 z_pred, v_pred = solver.solve(verbose=True)
 
-plt.plot(t, V, label="exp.")
-plt.plot(t[:t_lim_index], v_pred, label="pred.")
-plt.xlabel('Time [s]')
-plt.ylabel('V [V]')
+# Plots
+fig = plt.figure()
+
+ax1 = fig.add_subplot(3,1,1)
+ax1.plot(t, V, label="exp.")
+ax1.plot(t[:t_lim_index], v_pred, label="pred.")
+ax1.set_xlabel('Time [s]')
+ax1.set_ylabel('V [V]')
+
+ax2 = fig.add_subplot(3,1,2)
+ax2.plot(t[:t_lim_index], z_pred, label="SOC pred.")
+ax2.set_xlabel('Time [s]')
+ax2.set_ylabel('SOC')
+
+ax3 = fig.add_subplot(3,1,3)
+ax3.plot(t, I, label="I_exp")
+ax3.set_xlabel('Time [s]')
+ax3.set_ylabel('I [A]')
+
 plt.legend()
+plt.tight_layout()
 plt.show()
