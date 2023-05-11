@@ -11,8 +11,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from ocv_soc_func import OCV_func, SOC_func
-from src.model.ecm import Thevenin1RC
-from src.solver.discrete_time_solver import DT_solver
+from ECM.model.ecm import Thevenin1RC
+from ECM.solver.discrete_time_solver import DT_solver
 
 
 def eta_func(i):

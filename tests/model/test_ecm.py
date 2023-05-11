@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from src.model.ecm import Thevenin1RC
+from ECM.model.ecm import Thevenin1RC
 
 
 class TestThevenin1RC(unittest.TestCase):

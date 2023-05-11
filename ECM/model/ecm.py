@@ -1,5 +1,5 @@
 import numpy as np
-from src.calc_helpers.constants import PhysicsConstants
+from ECM.calc_helpers.constants import PhysicsConstants
 
 
 class Thevenin1RC:

@@ -1,4 +1,4 @@
-from src.model.ecm import Thevenin1RC
+from ECM.model.ecm import Thevenin1RC
 
 
 class Lumped:

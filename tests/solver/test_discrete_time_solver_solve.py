@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from src.model.ecm import Thevenin1RC
-from src.solver.discrete_time_solver import DT_solver
+from ECM.model.ecm import Thevenin1RC
+from ECM.solver.discrete_time_solver import DT_solver
 
 
 class TestDiscreteTimeSolver(unittest.TestCase):
@@ -23,12 +23,12 @@ class TestDiscreteTimeSolver(unittest.TestCase):
                           E_R0=E_R0, E_R1=E_R1, T_amb=298.15)
 
         t_app = np.array([1,2,3,4,5])
-        i_app = np.array([0.1,0.1,0.1,0.1,0.1])
+        i_app = np.array([1, 1, 1, 1, 1])
         solver = DT_solver(ECM_obj=ecm, isothermal=True, t_app=t_app, i_app=i_app)
         z_pred, v_pred = solver.solve()
 
-        z_sol = np.array([0.5, 0.4, 0.3, 0.2, 0.1])
-        v_sol = np.array([2.749, 2.69804837, 2.64718731, 2.59640818, 2.5457032 ])
+        z_sol = np.array([0.5, 0.49972222, 0.49944444, 0.49916667, 0.49888889])
+        v_sol = np.array([2.74, 2.73034485, 2.7215953, 2.71366516, 2.70647645])
         self.assertTrue(np.all(np.isclose(z_sol, z_pred)))
         self.assertTrue(np.all(np.isclose(v_sol, v_pred)))
 

@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from src.model.ecm import Thevenin1RC
-from src.solver.discrete_time_solver import DT_solver
+from ECM.model.ecm import Thevenin1RC
+from ECM.solver.discrete_time_solver import DT_solver
 
 
 class TestDiscreteTimeSolver(unittest.TestCase):
