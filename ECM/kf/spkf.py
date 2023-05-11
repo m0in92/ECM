@@ -57,6 +57,8 @@ class SPKF:
         else:
             raise TypeError("h_func should be a function object.")
 
+        self.yhat = 3.5
+
     @property
     def aug_state_vector(self):
         """
@@ -119,7 +121,7 @@ class SPKF:
         Constant for CDKF.
         :return:
         """
-        return ((self.h ** 2) - self.L) / self.h
+        return ((self.h ** 2) - self.L) / (self.h ** 2)
 
     @property
     def alpha_m(self):
@@ -229,7 +231,7 @@ class SPKF:
             raise TypeError("ytrue needs to be an float or Numpy array.")
 
         if self.Ny != Ny_i:
-            raise ValueError("Length of y should be equal to object's Ny attribute.")
+            raise ValueError(f"Length of y ({Ny_i}) should be equal to object's Ny attribute ({self.Ny}).")
 
         # Step 1a:
         Xx, xhat = self.state_estimate_time_update(u=u)
@@ -244,8 +246,10 @@ class SPKF:
         # Step 2c
         SigmaX = self.cov_measurement_update(L, SigmaX=SigmaX, SigmaY=SigmaY)
 
+        # update class attributes.
         self.xhat = xhat_update
         self.SigmaX = SigmaX
+        self.yhat = y_hat
 
     @staticmethod
     def plot(t_array, measurement_array, sigma_array=None, truth_array=None):

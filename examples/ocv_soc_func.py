@@ -13,16 +13,16 @@ V_charge = df_discharge['Voltage(V)'].to_numpy()
 del df_discharge, df_charge
 
 def OCV_discharge():
-    return sci_interp.interp1d(soc_discharge, V_discharge)
+    return sci_interp.interp1d(soc_discharge, V_discharge, fill_value="extrapolate")
 
 def SOC_discharge():
-    return sci_interp.interp1d(V_discharge, soc_discharge)
+    return sci_interp.interp1d(V_discharge, soc_discharge, fill_value="extrapolate")
 
 def OCV_charge():
-    return sci_interp.interp1d(soc_charge, V_charge)
+    return sci_interp.interp1d(soc_charge, V_charge, fill_value="extrapolate")
 
 def SOC_charge():
-    return sci_interp.interp1d(V_charge, soc_charge)
+    return sci_interp.interp1d(V_charge, soc_charge,fill_value="extrapolate")
 
 def OCV_func(soc):
     return (OCV_discharge()(soc) + OCV_charge()(soc))/2
