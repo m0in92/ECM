@@ -4,6 +4,7 @@ import tqdm
 
 import ECM.solver.base
 from ECM.kf.spkf import SPKF
+from ECM.sol import Solution
 
 
 class DTSolver(ECM.solver.base.BaseSolver):
@@ -20,8 +21,20 @@ class DTSolver(ECM.solver.base.BaseSolver):
     Where k represents the time-point and delta_t represents the time-step between z[k+1] and z[k].
     """
 
-    def __init__(self, ECM_obj, isothermal, t_app, i_app):
+    def __init__(self, ECM_obj, isothermal, t_app, i_app, v_exp=None):
+        """
+        The class constructor for the solver object.
+        :params ECM_obj: (Thevenin1RC) ECM model object
+        :params isothermal: (bool)
+        :params t_app: (Numpy array) array of time.
+        :params i_app: (Numpy array) array of applied battery current associated with the time array.
+        :param v_exp: (Numpy array) array of experimental battery terminal voltage data.
+        """
         super().__init__(ECM_obj=ECM_obj, isothermal=isothermal, t_app=t_app, i_app=i_app)
+        if isinstance(v_exp, type(None)) or isinstance(v_exp, np.ndarray):
+            self.v_exp = v_exp
+        else:
+            raise TypeError("v_exp can be either None or Numpy array.")
 
     def solve(self, verbose=False):
         # list for storing SOC and voltage values
@@ -39,7 +52,8 @@ class DTSolver(ECM.solver.base.BaseSolver):
             if verbose:
                 print('k: ',k ,', t [s]: ', t_current, ' ,I [A]: ', self.i_app[k], ' , SOC: ', z_array[k],', V [V]: ', v_array[k])
         v_array[-1] = self.ECM_obj.v(i_app=self.i_app[-1])
-        return z_array, v_array
+        return Solution(t_sim=self.t_app, i_sim=self.i_app, z_sim=z_array, v_sim=v_array, t_actual=self.t_app,
+                        v_actual=self.v_exp)
 
 
 class DTSolverSPKF(ECM.solver.base.BaseSolver):

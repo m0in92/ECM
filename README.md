@@ -12,6 +12,15 @@ Thevenin equivalent-circuit model (ECM).
 
 <img title="" src="https://github.com/m0in92/ECM/blob/main/imgs/example_fig.png" alt="" data-align="inline">
 
+### Directory Structure:
+```examples``` - contains the example usage of this Python module.
+
+```data``` - contains the datasets used in the examples.
+
+```imgs``` - contains the images used in the documentations.
+
+```src``` - contains the source code.
+
 
 
 
