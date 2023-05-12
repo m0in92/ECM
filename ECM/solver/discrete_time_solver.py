@@ -21,7 +21,7 @@ class DTSolver(ECM.solver.base.BaseSolver):
     Where k represents the time-point and delta_t represents the time-step between z[k+1] and z[k].
     """
 
-    def __init__(self, ECM_obj, isothermal, t_app, i_app, v_exp=None):
+    def __init__(self, ECM_obj, isothermal, t_app, i_app, V_actual=None):
         """
         The class constructor for the solver object.
         :params ECM_obj: (Thevenin1RC) ECM model object
@@ -31,10 +31,10 @@ class DTSolver(ECM.solver.base.BaseSolver):
         :param v_exp: (Numpy array) array of experimental battery terminal voltage data.
         """
         super().__init__(ECM_obj=ECM_obj, isothermal=isothermal, t_app=t_app, i_app=i_app)
-        if isinstance(v_exp, type(None)) or isinstance(v_exp, np.ndarray):
-            self.v_exp = v_exp
+        if isinstance(V_actual, type(None)) or isinstance(V_actual, np.ndarray):
+            self.V_actual = V_actual
         else:
-            raise TypeError("v_exp can be either None or Numpy array.")
+            raise TypeError("V_actual can be either None or Numpy array.")
 
     def solve(self, verbose=False):
         # list for storing SOC and voltage values
@@ -53,7 +53,7 @@ class DTSolver(ECM.solver.base.BaseSolver):
                 print('k: ',k ,', t [s]: ', t_current, ' ,I [A]: ', self.i_app[k], ' , SOC: ', z_array[k],', V [V]: ', v_array[k])
         v_array[-1] = self.ECM_obj.v(i_app=self.i_app[-1])
         return Solution(t_sim=self.t_app, i_sim=self.i_app, z_sim=z_array, v_sim=v_array, t_actual=self.t_app,
-                        v_actual=self.v_exp)
+                        v_actual=self.V_actual)
 
 
 class DTSolverSPKF(ECM.solver.base.BaseSolver):
@@ -117,7 +117,8 @@ class DTSolverSPKF(ECM.solver.base.BaseSolver):
             z_array = np.append(z_array, self.spkf_object.xhat[0,0])
             v_array = np.append(v_array, self.spkf_object.yhat[0])
 
-        return z_array, v_array
+        return Solution(t_sim=self.t_app, i_sim=self.i_app, z_sim=z_array, v_sim=v_array, t_actual=self.t_app,
+                        v_actual=self.V_actual)
 
 
 class HybridDiscreteSolver(DTSolverSPKF):
@@ -176,7 +177,9 @@ class HybridDiscreteSolver(DTSolverSPKF):
                 self.ECM_obj.i_R1 = x_array[1,0]
                 V_array = np.append(V_array, self.h_func(x_k=x_array, u_k=i_curr, v_k=0))
             SOC_array = np.append(SOC_array, self.ECM_obj.SOC)
-        return SOC_array, V_array
+        return Solution(t_sim=self.t_array, i_sim=self.I_array, z_sim=SOC_array, v_sim=V_array, t_actual=self.t_app,
+                        i_actual=self.i_app, v_actual=self.V_actual)
+        # return SOC_array, V_array
 
 
 

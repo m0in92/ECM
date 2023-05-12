@@ -52,12 +52,12 @@ class Solution:
 
         if self.v_actual is not None:
             ax1.plot(self.t_actual, self.v_actual, label="exp.")
-        ax1.plot(self.t_array, self.v_array, label="pred.")
+        ax1.plot(self.t_array[:-1], self.v_array, label="pred.")
         ax1.set_xlabel('Time [s]')
         ax1.set_ylabel('V [V]')
         ax1.legend()
 
-        ax2.plot(self.t_array, self.z_array, label="SOC pred.")
+        ax2.plot(self.t_array[:-1], self.z_array, label="SOC pred.")
         ax2.set_xlabel('Time [s]')
         ax2.set_ylabel('SOC')
 
