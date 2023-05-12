@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 from ocv_soc_func import OCV_func, SOC_func
 from ECM.model.ecm import Thevenin1RC
-from ECM.solver.discrete_time_solver import DT_solver_spkf
+from ECM.solver.discrete_time_solver import hybrid_discrete_solver
 
 
 def eta_func(i):
@@ -36,26 +36,25 @@ ecm = Thevenin1RC(R0=0.225, R1=0.001, C1=0.03, OCV_func=OCV_func, eta_func=eta_f
 # remember the current convention: positive for discharge and negative for charge
 SigmaX = np.array([[1e-8, 0],[0, 1e-8]])
 SigmaW, SigmaV = 1e-8, 1e-8
-solver = DT_solver_spkf(ECM_obj=ecm, isothermal=True, t_app=t[:t_lim_index], i_app=-I[:t_lim_index], SigmaX=SigmaX,
-                        SigmaW=SigmaW, SigmaV=SigmaV, V_actual=V[:t_lim_index])
+solver = hybrid_discrete_solver(ECM_obj=ecm, isothermal=True, t_app=t[:t_lim_index], i_app=-I[:t_lim_index], SigmaX=SigmaX,
+                        SigmaW=SigmaW, SigmaV=SigmaV, V_actual=V[:t_lim_index], t_start=0, t_end=40000, t_interval=1)
 z_pred, v_pred = solver.solve()
-
-print(v_pred)
 
 # Plots
 fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1)
 
 ax1.plot(t, V, label="exp.")
-ax1.plot(t[:t_lim_index-1], v_pred, label="pred.")
+ax1.plot(solver.t_array[1:], v_pred, label="pred.")
 ax1.set_xlabel('Time [s]')
 ax1.set_ylabel('V [V]')
 ax1.legend(loc='right')
 
-ax2.plot(t[:t_lim_index-1], z_pred, label="SOC pred.")
+ax2.plot(solver.t_array[1:], z_pred, label="SOC pred.")
 ax2.set_xlabel('Time [s]')
 ax2.set_ylabel('SOC')
 
 ax3.plot(t, I, label="I_exp")
+ax3.plot(solver.t_array, -solver.I_array, label="I_sim")
 ax3.set_xlabel('Time [s]')
 ax3.set_ylabel('I [A]')
 
