@@ -1,11 +1,12 @@
 import numpy as np
 from scipy.interpolate import interp1d
+import tqdm
 
 import ECM.solver.base
 from ECM.kf.spkf import SPKF
 
 
-class DT_solver(ECM.solver.base.BaseSolver):
+class DTSolver(ECM.solver.base.BaseSolver):
     """
     This is the class that solves the ECM model equations for time and applied current arrays. It outputs the terminal
     SOC and voltage at the time steps specified by the input time array.
@@ -41,7 +42,7 @@ class DT_solver(ECM.solver.base.BaseSolver):
         return z_array, v_array
 
 
-class DT_solver_spkf(ECM.solver.base.BaseSolver):
+class DTSolverSPKF(ECM.solver.base.BaseSolver):
     def __init__(self, ECM_obj, isothermal, t_app, i_app, SigmaX, SigmaW, SigmaV, V_actual):
         super().__init__(ECM_obj=ECM_obj, isothermal=isothermal, t_app=t_app, i_app=i_app)
 
@@ -91,7 +92,7 @@ class DT_solver_spkf(ECM.solver.base.BaseSolver):
     def solve(self):
         # Introduce arrays for SOC (represented by z) and V (represented by v) storage.
         z_array, v_array = np.array([]), np.array([])
-        for k_ in range(len(self.t_app)-1):
+        for k_ in tqdm.tqdm(range(len(self.t_app)-1)):
             t_current = self.t_app[k_]
             t_next = self.t_app[k_+1]
             self.delta_t = self.ECM_obj.delta_t(t_next, t_current)
@@ -105,7 +106,7 @@ class DT_solver_spkf(ECM.solver.base.BaseSolver):
         return z_array, v_array
 
 
-class hybrid_discrete_solver(DT_solver_spkf):
+class HybridDiscreteSolver(DTSolverSPKF):
     """
     This solver is intended to solve for battery modelling in case of gaps in the actual dataset. The solver first
     creates a time array with equally spaced entries. It solves using SPKF for time periods where sensor data
@@ -141,7 +142,7 @@ class hybrid_discrete_solver(DT_solver_spkf):
     def solve(self):
         # intialize arrays for storage
         SOC_array, V_array = np.array([]), np.array([])
-        for k in range(len(self.t_array)-1):
+        for k in tqdm.tqdm(range(len(self.t_array)-1)):
             t_current = self.t_array[k]
             t_next = self.t_array[k + 1]
             self.delta_t = self.ECM_obj.delta_t(t_next, t_current)
@@ -160,7 +161,6 @@ class hybrid_discrete_solver(DT_solver_spkf):
                 self.ECM_obj.SOC = x_array[0,0]
                 self.ECM_obj.i_R1 = x_array[1,0]
                 V_array = np.append(V_array, self.h_func(x_k=x_array, u_k=i_curr, v_k=0))
-            print(self.ECM_obj.SOC)
             SOC_array = np.append(SOC_array, self.ECM_obj.SOC)
         return SOC_array, V_array
 

@@ -13,8 +13,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from ocv_soc_func import OCV_func, SOC_func
-from ECM.model.ecm import Thevenin1RC
-from ECM.solver.discrete_time_solver import DT_solver_spkf
+import ECM
 
 
 def eta_func(i):
@@ -30,14 +29,14 @@ I = df['Current(A)'].to_numpy()
 V = df['Voltage(V)'].to_numpy()
 
 # Rough parameter estimations just by eye-balling
-ecm = Thevenin1RC(R0=0.225, R1=0.001, C1=0.03, OCV_func=OCV_func, eta_func=eta_func, capacity=1.1, SOC_0=0.417,
-                  E_R0=None, E_R1=None, T_amb=293.15)
+ecm = ECM.Thevenin1RC(R0=0.225, R1=0.001, C1=0.03, OCV_func=OCV_func, eta_func=eta_func, capacity=1.1, SOC_0=0.417,
+                      E_R0=None, E_R1=None, T_amb=293.15)
 
 # remember the current convention: positive for discharge and negative for charge
 SigmaX = np.array([[1e-8, 0],[0, 1e-8]])
 SigmaW, SigmaV = 1e-8, 1e-8
-solver = DT_solver_spkf(ECM_obj=ecm, isothermal=True, t_app=t[:t_lim_index], i_app=-I[:t_lim_index], SigmaX=SigmaX,
-                        SigmaW=SigmaW, SigmaV=SigmaV, V_actual=V[:t_lim_index])
+solver = ECM.DTSolverSPKF(ECM_obj=ecm, isothermal=True, t_app=t[:t_lim_index], i_app=-I[:t_lim_index], SigmaX=SigmaX,
+                          SigmaW=SigmaW, SigmaV=SigmaV, V_actual=V[:t_lim_index])
 z_pred, v_pred = solver.solve()
 
 print(v_pred)
