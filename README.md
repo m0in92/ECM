@@ -9,6 +9,7 @@ Thevenin equivalent-circuit model (ECM).
 ### Features:
 - Thevenin ECM model
 - Sigma-Point Kalman Filter (SPKF) for ECM model to account for process and sensor noise.
+- Parameter Estimations (currently through Genetic Algorithm)
 
 <img title="" src="https://github.com/m0in92/ECM/blob/main/imgs/example_fig.png" alt="" data-align="inline">
 
