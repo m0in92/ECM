@@ -19,7 +19,7 @@ Thevenin equivalent-circuit model (ECM).
 
 ```imgs``` - contains the images used in the documentations.
 
-```src``` - contains the source code.
+```ECM``` - contains the source code.
 
 
 

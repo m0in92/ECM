@@ -10,7 +10,6 @@ Battery cell parameters:
 """
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from ocv_soc_func import OCV_func, SOC_func
 import ECM
