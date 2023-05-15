@@ -37,7 +37,7 @@ class Solution:
             if len(v_sim) == len(self.t_array):
                 self.v_array = v_sim
             else:
-                raise ValueError("Lengths of t_sim and z_sim do not match.")
+                raise ValueError("Lengths of t_sim and v_sim do not match.")
 
         self.t_actual = t_actual
         if isinstance(t_actual, np.ndarray):

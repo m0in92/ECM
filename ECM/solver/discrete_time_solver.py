@@ -141,8 +141,6 @@ class HybridDiscreteSolver(DTSolverSPKF):
             raise TypeError("Time period input needs to be a float type.")
         # Next find the index in the t_app where its element is equal to the input time period
         i = np.where(self.t_app == time_period)[0]
-        if np.any(i):
-            raise ValueError(f"{time_period} not in experimental time")
         return self.V_actual[i[0]]
 
     @property
@@ -169,7 +167,7 @@ class HybridDiscreteSolver(DTSolverSPKF):
                 self.spkf_object.solve(u=i_curr, ytrue=self.find_V_actual(self.t_array[k]))
                 # state update
                 self.ECM_obj.SOC, self.ECM_obj.i_R1 = self.spkf_object.xhat[0,0], self.spkf_object.xhat[1,0]
-                V_array = np.append(V_array, self.spkf_object.yhat)[0]
+                V_array = np.append(V_array, self.spkf_object.yhat[0])
             else:
                 x_array = self.f_func(x_k=xhat, u_k=i_curr, w_k=0)
                 # state update
