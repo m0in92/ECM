@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.typing as npt
 import matplotlib.pyplot as plt
 
 
@@ -7,21 +8,36 @@ class Solution:
     Creates a solution object that stores the simulation results. The object methods provides the plotting
     functionalities.
     """
-    def __init__(self, t_sim, i_sim, z_sim, v_sim, t_actual=None, i_actual=None, z_actual=None, v_actual=None):
+    def __init__(self, t_sim: npt.ArrayLike, i_sim: npt.ArrayLike, z_sim: npt.ArrayLike, v_sim: npt.ArrayLike,
+                 t_actual: None|npt.ArrayLike= None, i_actual: None|npt.ArrayLike= None,
+                 z_actual: None|npt.ArrayLike= None, v_actual: None|npt.ArrayLike =None) -> None:
         """
-        Solution Constructor
+        Solution Constructor.
+        :param t_sim: (Numpy array) simulation time array.
+        :param i_sim: (Numpy array) simulation current array
+        :param z_sim: (Numpy array) simulation SOC array
+        :param v_sim: (Numpy array) simulation terminal voltage array.
         """
         if isinstance(t_sim, np.ndarray):
             self.t_array = t_sim
 
         if isinstance(i_sim, np.ndarray):
-            self.i_array = i_sim
+            if len(i_sim) == len(self.t_array):
+                self.i_array = i_sim
+            else:
+                raise ValueError("Lengths of t_sim and i_sim do not match.")
 
         if isinstance(z_sim, np.ndarray):
-            self.z_array = z_sim
+            if len(z_sim) == len(self.t_array):
+                self.z_array = z_sim
+            else:
+                raise ValueError("Lengths of t_sim and z_sim do not match.")
 
         if isinstance(v_sim, np.ndarray):
-            self.v_array = v_sim
+            if len(v_sim) == len(self.t_array):
+                self.v_array = v_sim
+            else:
+                raise ValueError("Lengths of t_sim and z_sim do not match.")
 
         self.t_actual = t_actual
         if isinstance(t_actual, np.ndarray):
@@ -52,12 +68,12 @@ class Solution:
 
         if self.v_actual is not None:
             ax1.plot(self.t_actual, self.v_actual, label="exp.")
-        ax1.plot(self.t_array[:-1], self.v_array, label="pred.")
+        ax1.plot(self.t_array, self.v_array, label="pred.")
         ax1.set_xlabel('Time [s]')
         ax1.set_ylabel('V [V]')
         ax1.legend()
 
-        ax2.plot(self.t_array[:-1], self.z_array, label="SOC pred.")
+        ax2.plot(self.t_array, self.z_array, label="SOC pred.")
         ax2.set_xlabel('Time [s]')
         ax2.set_ylabel('SOC')
 

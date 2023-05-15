@@ -1,7 +1,9 @@
 import time
+import warnings
 
 import numpy as np
-
+import numpy.typing as npt
+import matplotlib.pyplot as plt
 
 def timer(solver_func):
     """
@@ -73,6 +75,10 @@ class GA:
         else:
             raise TypeError("n_elite needs to be a integer.")
 
+        self.n_mutatation = self.n_chromosomes - self.n_pool
+        if self.n_mutatation == 0:
+            raise ValueError("There are no mutation children. Please adjust the n_pool and n_elite.")
+
         if isinstance(n_generations, int):
             self.n_generations = n_generations
         else:
@@ -139,48 +145,92 @@ class GA:
         # Append elite and children populations
         return np.concatenate((elite_population, children_population), axis=0)
 
-    def mutate(self, population):
+    def mutate(self, population) -> npt.ArrayLike:
         # calc. the population to mutate.
-        n_population_to_mutate = int((self.n_chromosomes - self.n_elite) * (1 - self.mutating_factor))
-        # create an array of population to mutate.
-        random_index = np.random.choice(self.n_chromosomes, n_population_to_mutate, replace=False)
-        for chromsome_i in random_index:
+        chromosome_i_to_choose_from = np.arange(start=self.n_chromosomes - self.n_mutatation, stop=self.n_chromosomes)
+        for chromsome_i in chromosome_i_to_choose_from:
             for gene_i in range(self.n_genes):
                 population[chromsome_i, gene_i] = population[chromsome_i, gene_i] \
                                                   + np.std(population[:,gene_i]) * np.random.uniform(0, 1)
         return population
 
     @timer
-    def solve(self):
+    def solve(self) -> tuple:
         """
         Performs the genetic algorithm.
-        :returns: (Numpy array) an array of parameters after optimizing through genetic algorithm
+        :returns: a tuple of Numpy arrays of optimized parameters and objective function's value after each generation.
         """
+        obj_func_value_array = np.array([]) # stores the objective function values after each generation.
         # First, initialize the population
         population = self.initialize_population()
-        for generation_i in range(self.n_generations):
+        for generation_i in range(self.n_generations+1):
+            # information for the user.
+            print("Generation: ", generation_i)
             # Then, calculate the fitness
             fitness_array = self.calc_fitness(population=population)
             # Create the mating population
             population = self.mating_population(population=population, fitness_array=fitness_array)
             # Create new population based on elite populations, crossover, and mutations
             population = self.create_new_population(mating_population=population)
-            population = self.mutate(population=population) # This population is used for the next iteration
-        return population[0]
+            population = self.mutate(population=population) # This population is used for the next iteration.
+            # Update arrays
+            obj_func_value = self.obj_func(population[0])
+            obj_func_value_array = np.append(obj_func_value_array, obj_func_value)
+            # Display information to the user.
+            print(f"Optimized parameter list for generation {generation_i}: ", population[0])
+            print(f"objective function output: {obj_func_value}")
+        return population[0], obj_func_value_array
+
+    def plot(self, obj_func_value_array:npt.ArrayLike) -> None:
+        """
+        Plots the objective function values at each generation.
+        :params obj_func_value_array: (Numpy array) array containg the objective function values at each generation.
+        """
+        fig, ax = plt.subplots(nrows=1, ncols=1)
+        ax.plot(obj_func_value_array)
+        ax.set_xlabel("Generations")
+        ax.set_ylabel("MSE")
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def MSE(array_sim, array_actual) -> npt.ArrayLike:
+        """
+        Mean squared error.
+        :param array_pred:
+        :param array_actual:
+        :return:
+        """
+        if len(array_sim) == len(array_actual):
+            return np.mean(np.square(array_sim - array_actual))
+        else:
+            warnings.warn("Lengths of the vectors are not equal.")
+            return np.mean(np.square(array_sim - array_actual[:len(array_sim)]))
 
 
 
-def objective_func(x):
-    return x.sum()
-ga_example = GA(n_chromosomes=10, bounds=np.array([[0,1],[0,1],[0,100]]), obj_func=objective_func, n_pool=7, n_elite=3, n_generations=3)
-# initial_population = ga_example.initialize_population()
-# # print(initial_population)
-# fitness_array = ga_example.calc_fitness(initial_population)
-# # print(fitness_array)
-# mating_pool = ga_example.mating_population(population=initial_population, fitness_array=fitness_array)
-# # print(mating_pool)
-# new_population = ga_example.create_new_population(mating_population=mating_pool)
-# # print(new_population)
-# mutated_pop = ga_example.mutate(population=new_population)
-result = ga_example.solve()
-print(result)
+
+
+
+
+
+
+
+
+
+
+
+# def objective_func(x):
+#     return x.sum()
+# ga_example = GA(n_chromosomes=10, bounds=np.array([[0,1],[0,1],[0,100]]), obj_func=objective_func, n_pool=7, n_elite=3, n_generations=3)
+# # initial_population = ga_example.initialize_population()
+# # # print(initial_population)
+# # fitness_array = ga_example.calc_fitness(initial_population)
+# # # print(fitness_array)
+# # mating_pool = ga_example.mating_population(population=initial_population, fitness_array=fitness_array)
+# # # print(mating_pool)
+# # new_population = ga_example.create_new_population(mating_population=mating_pool)
+# # # print(new_population)
+# # mutated_pop = ga_example.mutate(population=new_population)
+# result = ga_example.solve()
+# print(result)

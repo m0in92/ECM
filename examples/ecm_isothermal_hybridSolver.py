@@ -19,7 +19,7 @@ def eta_func(i):
     return 1 if i<=0 else 0.9995
 
 
-t_lim_index = 26000
+t_lim_index = 500
 
 # Read experimental data
 df = pd.read_csv('../data/CALCE_A123/A1-A123-Dynamics.csv')
@@ -28,7 +28,10 @@ I = df['Current(A)'].to_numpy()
 V = df['Voltage(V)'].to_numpy()
 
 # Rough parameter estimations just by eye-balling
-ecm = ECM.Thevenin1RC(R0=0.225, R1=0.001, C1=0.03, OCV_func=OCV_func, eta_func=eta_func, capacity=1.1, SOC_0=0.417,
+R0 = 0.225
+R1 = 0.001
+C1 = 0.03
+ecm = ECM.Thevenin1RC(R0=0.2199183, R1=0.02504962, C1=0.43976673, OCV_func=OCV_func, eta_func=eta_func, capacity=1.1, SOC_0=0.417,
                       E_R0=None, E_R1=None, T_amb=293.15)
 # Create a solver object and then call the solve method.
 ## remember the current convention: positive for discharge and negative for charge.
@@ -36,6 +39,6 @@ SigmaX = np.array([[1e-8, 0],[0, 1e-8]])
 SigmaW, SigmaV = 1e-8, 1e-8
 solver = ECM.HybridDiscreteSolver(ECM_obj=ecm, isothermal=True, t_app=t[:t_lim_index], i_app=-I[:t_lim_index],
                                   SigmaX=SigmaX, SigmaW=SigmaW, SigmaV=SigmaV, V_actual=V[:t_lim_index],
-                                  t_start=0, t_end=40000, t_interval=1)
+                                  t_start=0, t_end=t[t_lim_index], t_interval=1)
 sol = solver.solve()
 sol.plot()

@@ -117,7 +117,7 @@ class DTSolverSPKF(ECM.solver.base.BaseSolver):
             z_array = np.append(z_array, self.spkf_object.xhat[0,0])
             v_array = np.append(v_array, self.spkf_object.yhat[0])
 
-        return Solution(t_sim=self.t_app, i_sim=self.i_app, z_sim=z_array, v_sim=v_array, t_actual=self.t_app,
+        return Solution(t_sim=self.t_app[:-1], i_sim=self.i_app, z_sim=z_array, v_sim=v_array, t_actual=self.t_app,
                         v_actual=self.V_actual)
 
 
@@ -177,9 +177,8 @@ class HybridDiscreteSolver(DTSolverSPKF):
                 self.ECM_obj.i_R1 = x_array[1,0]
                 V_array = np.append(V_array, self.h_func(x_k=x_array, u_k=i_curr, v_k=0))
             SOC_array = np.append(SOC_array, self.ECM_obj.SOC)
-        return Solution(t_sim=self.t_array, i_sim=self.I_array, z_sim=SOC_array, v_sim=V_array, t_actual=self.t_app,
+        return Solution(t_sim=self.t_array[:-1], i_sim=self.I_array[:-1], z_sim=SOC_array, v_sim=V_array, t_actual=self.t_app,
                         i_actual=self.i_app, v_actual=self.V_actual)
-        # return SOC_array, V_array
 
 
 
