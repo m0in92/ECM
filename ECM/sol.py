@@ -63,7 +63,7 @@ class Solution:
                 raise TypeError("Since t_actual is Numpy array, so please input v_actual as a Numpy array as well.")
 
 
-    def plot(self):
+    def plot(self, y_axis_lower_lim=2, y_axis_upper_lim=4.2):
         fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, ncols=1)
 
         if self.v_actual is not None:
@@ -71,6 +71,7 @@ class Solution:
         ax1.plot(self.t_array, self.v_array, label="pred.")
         ax1.set_xlabel('Time [s]')
         ax1.set_ylabel('V [V]')
+        ax1.set_ylim(y_axis_lower_lim, y_axis_upper_lim)
         ax1.legend()
 
         ax2.plot(self.t_array, self.z_array, label="SOC pred.")

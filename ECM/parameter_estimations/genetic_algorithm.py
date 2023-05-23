@@ -5,6 +5,7 @@ import numpy as np
 import numpy.typing as npt
 import matplotlib.pyplot as plt
 
+
 def timer(solver_func):
     """
     Timer function is intended to be a decorator function that takes in any solver function and calculates the solver
