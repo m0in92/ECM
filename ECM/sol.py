@@ -19,23 +19,23 @@ class Solution:
         :param v_sim: (Numpy array) simulation terminal voltage array.
         """
         if isinstance(t_sim, np.ndarray):
-            self.t_array = t_sim
+            self.t_sim = t_sim
 
         if isinstance(i_sim, np.ndarray):
-            if len(i_sim) == len(self.t_array):
+            if len(i_sim) == len(self.t_sim):
                 self.i_array = i_sim
             else:
                 raise ValueError("Lengths of t_sim and i_sim do not match.")
 
         if isinstance(z_sim, np.ndarray):
-            if len(z_sim) == len(self.t_array):
-                self.z_array = z_sim
+            if len(z_sim) == len(self.t_sim):
+                self.z_sim = z_sim
             else:
                 raise ValueError("Lengths of t_sim and z_sim do not match.")
 
         if isinstance(v_sim, np.ndarray):
-            if len(v_sim) == len(self.t_array):
-                self.v_array = v_sim
+            if len(v_sim) == len(self.t_sim):
+                self.v_sim = v_sim
             else:
                 raise ValueError("Lengths of t_sim and v_sim do not match.")
 
@@ -68,17 +68,17 @@ class Solution:
 
         if self.v_actual is not None:
             ax1.plot(self.t_actual, self.v_actual, label="exp.")
-        ax1.plot(self.t_array, self.v_array, label="pred.")
+        ax1.plot(self.t_sim, self.v_sim, label="pred.")
         ax1.set_xlabel('Time [s]')
         ax1.set_ylabel('V [V]')
         ax1.set_ylim(y_axis_lower_lim, y_axis_upper_lim)
         ax1.legend()
 
-        ax2.plot(self.t_array, self.z_array, label="SOC pred.")
+        ax2.plot(self.t_sim, self.z_sim, label="SOC pred.")
         ax2.set_xlabel('Time [s]')
         ax2.set_ylabel('SOC')
 
-        ax3.plot(self.t_array, self.i_array, label="I_exp")
+        ax3.plot(self.t_sim, self.i_array, label="I_exp")
         ax3.set_xlabel('Time [s]')
         ax3.set_ylabel('I [A]')
 

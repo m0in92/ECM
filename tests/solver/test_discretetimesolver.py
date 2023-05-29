@@ -2,8 +2,7 @@ import unittest
 
 import numpy as np
 
-from ECM.model.ecm import Thevenin1RC
-from ECM.solver.discrete_time_solver import DT_solver
+import ECM
 
 
 class TestDiscreteTimeSolver(unittest.TestCase):
@@ -19,12 +18,12 @@ class TestDiscreteTimeSolver(unittest.TestCase):
         SOC_0 = 0.5
         E_R0 = 1000
         E_R1 = 5000
-        ecm = Thevenin1RC(R0=R0, R1=R1, C1=C1, OCV_func=OCV_func, eta_func=eta_func, capacity=capacity, SOC_0=SOC_0,
+        ecm = ECM.Thevenin1RC(R0=R0, R1=R1, C1=C1, OCV_func=OCV_func, eta_func=eta_func, capacity=capacity, SOC_0=SOC_0,
                           E_R0=E_R0, E_R1=E_R1, T_amb=298.15)
 
         t_app = np.array([1,2,3,4,5])
         i_app = np.array([1,1,1,1,1])
-        solver = DT_solver(ECM_obj=ecm, isothermal=True, t_app=t_app, i_app=i_app)
+        solver = ECM.DTSolver(ECM_obj=ecm, isothermal=True, t_app=t_app, i_app=i_app)
 
         self.assertEqual(ecm.R0, solver.ECM_obj.R0) # just to check the ECM object is passed correctly
         self.assertEqual(True, solver.isothermal)
@@ -43,13 +42,13 @@ class TestDiscreteTimeSolver(unittest.TestCase):
         SOC_0 = 0.5
         E_R0 = 1000
         E_R1 = 5000
-        ecm = Thevenin1RC(R0=R0, R1=R1, C1=C1, OCV_func=OCV_func, eta_func=eta_func, capacity=capacity, SOC_0=SOC_0,
+        ecm = ECM.Thevenin1RC(R0=R0, R1=R1, C1=C1, OCV_func=OCV_func, eta_func=eta_func, capacity=capacity, SOC_0=SOC_0,
                           E_R0=E_R0, E_R1=E_R1, T_amb=298.15)
 
         t_app = np.array([1,2,3,4,5])
         i_app = np.array([1,1,1,1])
         with self.assertRaises(TypeError):
-            DT_solver(ECM_obj=ecm, isothermal=True, t_app=t_app, i_app=i_app)
+            ECM.DTSolver(ECM_obj=ecm, isothermal=True, t_app=t_app, i_app=i_app)
 
     def test_check_constructor_with_t_app_as_float(self):
         def OCV_func(SOC):
@@ -63,13 +62,13 @@ class TestDiscreteTimeSolver(unittest.TestCase):
         SOC_0 = 0.5
         E_R0 = 1000
         E_R1 = 5000
-        ecm = Thevenin1RC(R0=R0, R1=R1, C1=C1, OCV_func=OCV_func, eta_func=eta_func, capacity=capacity, SOC_0=SOC_0,
+        ecm = ECM.Thevenin1RC(R0=R0, R1=R1, C1=C1, OCV_func=OCV_func, eta_func=eta_func, capacity=capacity, SOC_0=SOC_0,
                           E_R0=E_R0, E_R1=E_R1, T_amb=298.15)
 
         t_app = 1.0
         i_app = np.array([1,1,1,1])
         with self.assertRaises(TypeError):
-            DT_solver(ECM_obj=ecm, isothermal=True, t_app=t_app, i_app=i_app)
+            ECM.DTSolver(ECM_obj=ecm, isothermal=True, t_app=t_app, i_app=i_app)
 
     def test_check_constructor_with_matrix_t(self):
         def OCV_func(SOC):
@@ -85,10 +84,10 @@ class TestDiscreteTimeSolver(unittest.TestCase):
         SOC_0 = 0.5
         E_R0 = 1000
         E_R1 = 5000
-        ecm = Thevenin1RC(R0=R0, R1=R1, C1=C1, OCV_func=OCV_func, eta_func=eta_func, capacity=capacity, SOC_0=SOC_0,
+        ecm = ECM.Thevenin1RC(R0=R0, R1=R1, C1=C1, OCV_func=OCV_func, eta_func=eta_func, capacity=capacity, SOC_0=SOC_0,
                           E_R0=E_R0, E_R1=E_R1, T_amb=298.15)
 
         t_app = np.array([[1],[3],[4]])
         i_app = np.array([[1],[3],[4]])
         with self.assertRaises(TypeError):
-            DT_solver(ECM_obj=ecm, isothermal=True, t_app=t_app, i_app=i_app)
+            ECM.DTSolver(ECM_obj=ecm, isothermal=True, t_app=t_app, i_app=i_app)
