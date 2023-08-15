@@ -11,7 +11,6 @@ Battery cell parameters:
 import numpy as np
 import pandas as pd
 
-from parameter_sets.test.funcs import func_OCV, func_SOC, func_eta
 import ECM
 
 
@@ -24,8 +23,7 @@ I = df['Current(A)'].to_numpy()
 V = df['Voltage(V)'].to_numpy()
 
 # Create an Thevenin1RC object
-ecm = ECM.Thevenin1RC(R0=0.225, R1=0.001, C1=0.03, OCV_func=func_OCV, eta_func=func_eta, capacity=1.1, SOC_0=0.417,
-                      E_R0=None, E_R1=None, T_amb=293.15)
+ecm = ECM.Thevenin1RC(param_set_name='Calce_A123', SOC_init=0.417, T_amb=293.15)
 # Create a solver object and then call the solve method.
 ## remember the current convention: positive for discharge and negative for charge.
 SigmaX = np.array([[1e-8, 0],[0, 1e-8]])

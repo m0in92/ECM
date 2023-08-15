@@ -25,9 +25,6 @@ I = df['Current(A)'].to_numpy()
 V = df['Voltage(V)'].to_numpy()
 
 # Rough parameter estimations just by eye-balling
-R0 = 0.225
-R1 = 0.001
-C1 = 0.03
 # R0=0.2199183, R1=0.02504962, C1=0.43976673
 ecm = ECM.Thevenin1RC(param_set_name='Calce_A123', SOC_init=0.417, T_amb=293.15)
 # Create a solver object and then call the solve method.
