@@ -1,5 +1,7 @@
 import numpy as np
+
 from ECM.calc_helpers.constants import PhysicsConstants
+from ECM.parameter_set_manager import ParameterSets
 
 
 class Thevenin1RC:
@@ -40,28 +42,32 @@ class Thevenin1RC:
     1. It is assumed for now that eta is a function of applied current only.
     2. Discharge currrent is positve and charge current is negative by convention.
     """
-    def __init__(self, R0, R1, C1, OCV_func, eta_func, capacity, SOC_0, E_R0=None, E_R1=None, T_amb=298.15):
+    def __init__(self, param_set_name: str, SOC_init: float, T_amb=298.15):
+        # def __init__(self, R0, R1, C1, OCV_func, eta_func, capacity, SOC_0, E_R0=None, E_R1=None, T_amb=298.15)
         """
         Constructor class for Thevenin1RC class.
         """
-        self.R0_ref = R0
-        self.R1_ref = R1
-        self.C1 = C1
-        # Ensure OCV_func and eta_func are function objects.
-        if callable(OCV_func):
-            self.OCV_func = OCV_func
-        else:
-            raise TypeError("OCV must be a function object.")
-        if callable(eta_func):
-            self.eta_func = eta_func
-        else:
-            raise TypeError("eta must be a function object.")
-        self.capacity = capacity
-        self.SOC = SOC_0 # Initial condition for the SOC
-        self.E_R0 = E_R0
-        self.E_R1 = E_R1
-        self.i_R1 = 0.0 # Initial condition for i_R1
-        self.T_ref = T_amb # Reference temperature
+        param_set = ParameterSets(name= param_set_name)
+        self.R0_ref = param_set.R0
+        self.R1_ref = param_set.R1
+        self.C1 = param_set.C1
+        self.OCV_func = param_set.func_OCV
+        # # Ensure OCV_func and eta_func are function objects.
+        # if callable(OCV_func):
+        #     self.OCV_func = OCV_func
+        # else:
+        #     raise TypeError("OCV must be a function object.")
+        self.eta_func = param_set.func_eta
+        # if callable(eta_func):
+        #     self.eta_func = eta_func
+        # else:
+        #     raise TypeError("eta must be a function object.")
+        self.capacity = param_set.cap
+        self.SOC = SOC_init # Initial condition for the SOC
+        self.E_R0 = param_set.E_R0
+        self.E_R1 = param_set.E_R1
+        self.i_R1 = 0.0  # Initial condition for i_R1
+        self.T_ref = T_amb  # Reference temperature
         self.T = T_amb # Initial condition for the temperature
 
     @property

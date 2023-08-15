@@ -1,3 +1,7 @@
+"""
+This file shows an example of data extraction from source and saving it
+"""
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

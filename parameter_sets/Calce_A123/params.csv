@@ -1,0 +1,7 @@
+Name,Value
+R0 [ohms],0.225
+R1 [ohms],0.001
+C1 [F],0.03
+capacity [Ahr],1.1
+E_R0 [J/mol],0
+E_R1 [J/mol],0

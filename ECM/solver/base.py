@@ -8,7 +8,7 @@ from ECM.model.ecm import Thevenin1RC
 
 
 class BaseSolver:
-    def __init__(self, ECM_obj, isothermal, t_app, i_app):
+    def __init__(self, ECM_obj: Thevenin1RC, isothermal: bool, t_app: npt.ArrayLike, i_app: npt.ArrayLike):
         if isinstance(ECM_obj, Thevenin1RC):
             self.ECM_obj = ECM_obj
         else:

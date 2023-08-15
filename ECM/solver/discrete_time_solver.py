@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.typing as npt
 from scipy.interpolate import interp1d
 import tqdm
 
@@ -21,7 +22,8 @@ class DTSolver(ECM.solver.base.BaseSolver):
     Where k represents the time-point and delta_t represents the time-step between z[k+1] and z[k].
     """
 
-    def __init__(self, ECM_obj, isothermal, t_app, i_app, V_actual=None):
+    def __init__(self, ECM_obj, isothermal: bool, t_app: npt.ArrayLike, i_app: npt.ArrayLike,
+                 V_actual: npt.ArrayLike = None):
         """
         The class constructor for the solver object.
         :params ECM_obj: (Thevenin1RC) ECM model object
@@ -36,23 +38,21 @@ class DTSolver(ECM.solver.base.BaseSolver):
         else:
             raise TypeError("V_actual can be either None or Numpy array.")
 
-    def solve(self, verbose=False):
+    def solve(self):
         # list for storing SOC and voltage values
-        z_array, v_array = np.zeros(len(self.t_app)), np.zeros(len(self.t_app))  # initial conditions
-        z_array[0] = self.ECM_obj.SOC  # add initial SOC to the array
-        for k in range(len(self.t_app)-1):
+        lst_z, lst_v = [], []  # solution storage list
+        lst_z.append(self.ECM_obj.SOC)  # add initial SOC to the array
+        for k in tqdm.tqdm(range(len(self.t_app)-1)):
             # calc. the SOC of the next time step
             t_next = self.t_app[k + 1]
             t_current = self.t_app[k]
-            z_array[k + 1] = self.ECM_obj.SOC_next(i_app=self.i_app[k], t_next=t_next, t_current=t_current)
+            lst_z.append(self.ECM_obj.SOC_next(i_app=self.i_app[k], t_next=t_next, t_current=t_current))
             i_R1_next = self.ECM_obj.i_R1_next(i_app=self.i_app[k], t_next=t_next, t_current=t_current)
-            v_array[k] = self.ECM_obj.v(i_app=self.i_app[k])
-            self.ECM_obj.SOC = z_array[k + 1]  # update ECM_obj's SOC attribute for the next iteration.
+            lst_v.append(self.ECM_obj.v(i_app=self.i_app[k]))
+            self.ECM_obj.SOC = lst_z[k + 1]  # update ECM_obj's SOC attribute for the next iteration.
             self.ECM_obj.i_R1 = i_R1_next  # update ECM's obj i_R1 attribute for the next iteration.
-            if verbose:
-                print('k: ',k ,', t [s]: ', t_current, ' ,I [A]: ', self.i_app[k], ' , SOC: ', z_array[k],', V [V]: ', v_array[k])
-        v_array[-1] = self.ECM_obj.v(i_app=self.i_app[-1])
-        return Solution(t_sim=self.t_app, i_sim=self.i_app, z_sim=z_array, v_sim=v_array, t_actual=self.t_app,
+        lst_v.append(self.ECM_obj.v(i_app=self.i_app[-1]))
+        return Solution(t_sim=self.t_app, i_sim=self.i_app, z_sim=np.array(lst_z), v_sim=np.array(lst_v), t_actual=self.t_app,
                         v_actual=self.V_actual)
 
 
@@ -62,7 +62,7 @@ class DTSolverSPKF(ECM.solver.base.BaseSolver):
 
         # Initialize SPKF object
         xhat_init = np.array([[self.ECM_obj.SOC],[0]])
-        self.spkf_object = SPKF(xhat=xhat_init, Ny=1, SigmaX = SigmaX, SigmaW=SigmaW, SigmaV=SigmaV, f_func=self.f_func,
+        self.spkf_object = SPKF(xhat=xhat_init, Ny=1, SigmaX=SigmaX, SigmaW=SigmaW, SigmaV=SigmaV, f_func=self.f_func,
                                 h_func=self.h_func)
 
         # Sensor readings
